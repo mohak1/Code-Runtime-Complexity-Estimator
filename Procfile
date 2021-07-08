@@ -1,1 +1,1 @@
-web: gunicorn app:complexity_graph
+web: gunicorn complexity_graph:app
