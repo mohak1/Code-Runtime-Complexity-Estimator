@@ -1,7 +1,6 @@
 #libraries to make the rest api work
 from flask import Flask
 from flask_restful import Api, Resource
-from flask import request
 import json
 
 #libraries to make sphere engine work
@@ -363,37 +362,9 @@ class Complexity(Resource):
 
 api.add_resource(Complexity, "/complexity/<string:code>/<string:test>/<string:lang>")
 
-if __name__ == "__main__":
-    #change to flase when sending to sever
-    app.run(debug=True) 
+app.run(debug=False) 
 
-##########################################################################
+# if __name__ == "__main__":
+#     #change to flase when sending to sever
+#     app.run(debug=False) 
 
-
-
-"""
-from server:
-
-{
-    "estimatedComplexity": "Linear",
-    "runtimeList": [0.01, 0.01, 0.02, 0.02],
-
-    "constantModel": [0.015000000000032716],
-    "linearModel": [0.004000000000008724, 0.005000000000010907],
-    "logModel": [0.008262991541140205, 0.008434942020319226],
-    "quasiModel": [0.002144146714095231, 0.009517787429485397],
-    "quadraticModel": [7.375961001058933e-19, 0.004000000000008719, 0.005000000000010912],
-    "exponentialModel": [0.37714768901663454, -7.060311049636391]
-}
-
-
-
-
-
-
-
-
-
-
-
-"""
