@@ -362,7 +362,7 @@ class Complexity(Resource):
 
 api.add_resource(Complexity, "/complexity/<string:code>/<string:test>/<string:lang>")
 
-app.run(debug=False) 
+#app.run(debug=False) 
 
 # if __name__ == "__main__":
 #     #change to flase when sending to sever
