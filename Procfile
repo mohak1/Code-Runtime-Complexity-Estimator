@@ -1,1 +1,1 @@
-web: gunicorn complexity_graph:app
+web: gunicorn --timeout 9000 complexity_graph:app 
