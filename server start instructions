@@ -1,0 +1,12 @@
+# for self reference #
+
+running the gunicorn server in the background:
+gunicorn --timeout 9000 complexity_graph:app --daemon
+
+gunicorn/ngnix settings:
+cd to /etc/nginx/sites-enabled/
+filename: flaskapp
+server settings: defalut gunicorn server settings
+
+
+
