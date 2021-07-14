@@ -1,7 +1,7 @@
 # for self reference #
 
 running the gunicorn server in the background:
-gunicorn --timeout 9000 complexity_graph:app --daemon
+gunicorn --timeout {time_in_seconds; 0 is for no bound} --limit-request-line {num_chars; 0 is for unlimited} complexity_graph:app --daemon
 
 gunicorn/ngnix settings:
 cd to /etc/nginx/sites-enabled/
