@@ -48,7 +48,6 @@ class Complexity(Resource):
         accessToken: Sphere engine access token
         endpoint: Sphere engine endpoint
         """
-        # self.accessToken = self.allTokens[self.tokenCounter]
         client = CompilersClientV4(self.accessToken, self.endpoint)
         try:
             response = client.test()
