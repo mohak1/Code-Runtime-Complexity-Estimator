@@ -317,6 +317,7 @@ class Complexity(Resource):
         jsonError: A JSON formatted dictionary of error encountered during the 
         process of determining the best model 
         """
+        print("\ninside get\n")
         #reset the error flag and the error message
         self.isError = 0
         self.errorMessage = ""
