@@ -10,6 +10,7 @@ server settings: defalut gunicorn server settings
 
 reloading the nginx config:
 sudo nginx -s reload
+sudo systemctl restart nginx
 
 stopping the gunicorn server:
 sudo killall gunicorn
