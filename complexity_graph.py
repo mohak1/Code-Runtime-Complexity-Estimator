@@ -375,7 +375,7 @@ class Complexity(Resource):
             
             jsonDump = json.dumps(response)
             #adding header
-            jsonDump.headers.add("Access-Control-Allow-Origin", "*")
+            #jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonDump
         
         except Exception as e:
@@ -384,7 +384,7 @@ class Complexity(Resource):
             }
             jsonError = json.dumps(error)
             #adding header
-            jsonDump.headers.add("Access-Control-Allow-Origin", "*")
+            #jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonError
 
 api.add_resource(Complexity, "/complexity/<string:code>/<string:test>/<string:lang>")
