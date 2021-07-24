@@ -21,9 +21,13 @@ variables = camelCase
 Speech marks = double unless necessary
 """
 
+#app = Flask(__name__)
+#CORS(app)
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 api = Api(app)
+
 
 @app.route("/")
 def home():
