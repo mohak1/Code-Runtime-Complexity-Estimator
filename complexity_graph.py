@@ -26,11 +26,6 @@ CORS(app)
 app.config['Access-Control-Allow-Origin'] = '*'
 api = Api(app)
 
-#app = Flask(__name__)
-#cors = CORS(app)
-#app.config['CORS_HEADERS'] = 'Content-Type'
-
-
 @app.route("/")
 def home():
     #To test if the server works
@@ -318,7 +313,6 @@ class Complexity(Resource):
         jsonError: A JSON formatted dictionary of error encountered during the 
         process of determining the best model 
         """
-        print("\ninside get\n")
         #reset the error flag and the error message
         self.isError = 0
         self.errorMessage = ""
@@ -374,8 +368,6 @@ class Complexity(Resource):
             "exponentialModel": list(self.exponentialPars)}
             
             jsonDump = json.dumps(response)
-            #adding header
-            #jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonDump
         
         except Exception as e:
@@ -383,8 +375,6 @@ class Complexity(Resource):
                 "errorMessage" : self.errorMessage
             }
             jsonError = json.dumps(error)
-            #adding header
-            #jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonError
 
 api.add_resource(Complexity, "/complexity/<string:code>/<string:test>/<string:lang>")
