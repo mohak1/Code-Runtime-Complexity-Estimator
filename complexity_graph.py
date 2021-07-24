@@ -21,12 +21,13 @@ variables = camelCase
 Speech marks = double unless necessary
 """
 
-#app = Flask(__name__)
-#CORS(app)
 app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
-api = Api(app)
+CORS(app)
+app = Flask(__name__)
+
+#cors = CORS(app)
+#app.config['CORS_HEADERS'] = 'Content-Type'
+#pi = Api(app)
 
 
 @app.route("/")
@@ -371,6 +372,8 @@ class Complexity(Resource):
             "exponentialModel": list(self.exponentialPars)}
             
             jsonDump = json.dumps(response)
+            #adding header
+            jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonDump
         
         except Exception as e:
@@ -378,6 +381,8 @@ class Complexity(Resource):
                 "errorMessage" : self.errorMessage
             }
             jsonError = json.dumps(error)
+            #adding header
+            jsonDump.headers.add("Access-Control-Allow-Origin", "*")
             return jsonError
 
 api.add_resource(Complexity, "/complexity/<string:code>/<string:test>/<string:lang>")
