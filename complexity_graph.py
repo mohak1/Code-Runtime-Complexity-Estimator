@@ -23,6 +23,7 @@ Speech marks = double unless necessary
 
 app = Flask(__name__)
 CORS(app)
+app.config['Access-Control-Allow-Origin'] = '*'
 api = Api(app)
 
 #app = Flask(__name__)
