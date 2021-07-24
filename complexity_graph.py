@@ -23,11 +23,11 @@ Speech marks = double unless necessary
 
 app = Flask(__name__)
 CORS(app)
-app = Flask(__name__)
+api = Api(app)
 
+#app = Flask(__name__)
 #cors = CORS(app)
 #app.config['CORS_HEADERS'] = 'Content-Type'
-#pi = Api(app)
 
 
 @app.route("/")
