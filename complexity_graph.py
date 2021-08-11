@@ -40,8 +40,8 @@ class Complexity(Resource):
         #self.accessToken = "5cb67f444d05db8c8950aed82364ec60" #espired
         #self.endpoint = "8fd38a58.compilers.sphere-engine.com" #expired
 
-        self.accessToken = "8c746e2f0d6f0c40f9fcf0124ee939d9" #espires on 4th of Aug 
-        self.endpoint = "443a014d.compilers.sphere-engine.com" #expires on 4th of Aug
+        self.accessToken = "42ddd0d92643f12cd00f2eed0dca79a2" #espires on ? of Aug 
+        self.endpoint = "6e615774.compilers.sphere-engine.com" #expires on ? of Aug
 
         self.isError = 0
         self.errorMessage = ""
