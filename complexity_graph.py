@@ -5,11 +5,6 @@ from flask_restful import Api, Resource
 from flask_cors import CORS
 import json
 
-#libraries to make sphere engine work
-from sphere_engine import CompilersClientV4
-from sphere_engine.exceptions import SphereEngineException
-from time import sleep
-
 #libraries for graph fitting
 import numpy as np
 from scipy.optimize import curve_fit
@@ -34,170 +29,7 @@ def home():
 
 class Complexity(Resource):
     def __init__(self):
-        """Initializes the shared variables for Sphere API connection, error flag
-        and error messages.
-        """
-        #self.accessToken = "5cb67f444d05db8c8950aed82364ec60" #espired
-        #self.endpoint = "8fd38a58.compilers.sphere-engine.com" #expired
-
-        self.accessToken = "42ddd0d92643f12cd00f2eed0dca79a2" #espires on ? of Aug 
-        self.endpoint = "6e615774.compilers.sphere-engine.com" #expires on ? of Aug
-
-        self.isError = 0
-        self.errorMessage = ""
-
-    def sphere_connection_test(self):
-        """Checks if the connection to sphere engine API is valid.
-
-        Args:
-        accessToken: Sphere engine access token
-        endpoint: Sphere engine endpoint
-        """
-        client = CompilersClientV4(self.accessToken, self.endpoint)
-        try:
-            response = client.test()
-        except SphereEngineException as e:
-            self.isError = 1
-            if e.code == 401:
-                print("Invalid access token")
-            self.errorMessage = str(e)
-        except Exception as e:
-            self.isError=1
-            self.errorMessage = str(e)
-
-    def get_compiler_ids(self):
-        """Gets the compiler information that Sphere engine supports.
-        Each language compiler has a unique ID.
-        """
-        client = CompilersClientV4(self.accessToken, self.endpoint)
-        try:
-            response = client.compilers()
-            allItems = response["items"]
-            for i in range(len(allItems)):
-                compilerID = allItems[i]["id"]
-                compilerName = allItems[i]["name"]
-                print(f"compiler ID = {compilerID}, language = {compilerName}")
-        except SphereEngineException as e:
-            self.isError = 1
-            if e.code == 401:
-                print("Invalid access token")
-            self.errorMessage = str(e)
-        except Exception as e:
-            self.isError = 1
-            self.errorMessage = str(e)
-
-    def sphere_send_code(self, source, inputs, compilerID):
-        """Sends the code and compiler id to the Sphere engine API.
-        Gets a submission ID in return.
-
-        Args:
-        source: Source code for which the runtime has to be determined
-        inputs: Input cases for the code (list of cases)
-        compilerID: The ID of compiler, based on code langauge
-        
-        Returns:
-        submissionIDs: A list of submission IDs returned by Sphere API
-        """
-        client = CompilersClientV4(self.accessToken, self.endpoint)
-        compiler = compilerID
-        try:
-            submissionIDs = []
-            for inp in inputs:
-                response = client.submissions.create(source, compiler, inp)
-                submissionIDs.append(response["id"])
-                #pause for a second to avoid being marked as DOS
-                sleep(1)
-            return submissionIDs
-        except SphereEngineException as e:
-            self.isError = 1
-            if e.code == 401:
-                error = "Invalid access token"
-            elif e.code == 402:
-                error = "Unable to create submission" 
-            elif e.code == 400:
-                error = "Error code: " + str(e.error_code) + ", details available in the message: " + str(e)
-            self.errorMessage = error
-        except Exception as e:
-            self.isError = 1
-            error = "Error in sending request to Sphere API: " + str(e)
-            self.errorMessage = error
- 
-    def compilerLookup(self, lang):
-        """Looks up and returns  the compiler ID of the language from the compilerIDList dict.
-        Dictionary key-value pairs obtained from the get_compiler_ids() method
-        
-        Args:
-        lang: The langauge for which the compiler ID is to be returned
-
-        Returns:
-        CompID: The compiler ID of the requested language
-        """
-        compilerIDList = {
-            "C" : 11,
-            "C# [Mono]" : 27,
-            "C++ [GCC]" : 1,
-            "C++14 [GCC]" : 44,
-            "Go" : 114,
-            "Java": 10,
-            "JavaScript [Rhino]" : 35,
-            "JavaScript [SpiderMonkey]" : 112,
-            "Node.js" : 56,
-            "Objective-C" : 43,
-            "Python 2.x [Pypy]" : 4,
-            "Python 3.x" : 116,
-            "R" : 117,
-            "Rust" : 93,
-            "Swift" : 85
-        }
-        try:
-            compID = compilerIDList[lang]
-            return compID
-        except Exception as e:
-            self.isError = 1
-            error = "ID not found error: " + str(e)
-            self.errorMessage = error
-
-    def sphere_run_time(self, idList):
-        """Returns the runtime of each test case.
-
-        Args:
-        idList: the list of ids returned by Sphere Engine for the test cases
-
-        Returns:
-        runtimeList = list of runtime for all test cases
-        """
-        client = CompilersClientV4(self.accessToken, self.endpoint)
-        runtimeList = []
-        try:
-            for id in idList:
-                response = client.submissions.getMulti(id)
-                runtimeStatus = int(response["items"][0]["result"]["status"]["code"])
-                runtime = response["items"][0]["result"]["time"]
-                #add wait time if the code has not completed execution yet
-                while runtimeStatus in [0, 1, 2, 3]:
-                    #code is still executing
-                    sleep(1)
-                    response = client.submissions.getMulti(id)
-                    runtimeStatus = int(response["items"][0]["result"]["status"]["code"])
-                sleep(1)
-                #only adding runtime for successful executions
-                if runtimeStatus==15:
-                    runtime = float(response["items"][0]["result"]["time"])
-                    #append if the runtime is not None
-                    if runtime:
-                        runtimeList.append(runtime)
-            return runtimeList
-        except SphereEngineException as e:
-            self.isError = 1
-            if e.code == 401:
-                error = "Invalid access token" 
-            elif e.code == 400:
-                error = "Error code: " + str(e.error_code) + ", details available in the message: " + str(e)
-            self.errorMessage = error
-        except Exception as e:
-            self.isError = 1
-            error = "Error in getting runtime from Sphere API: " + str(e)
-            self.errorMessage = error
+        pass
 
     def constant_model(self, x, a):
         """Model to represent constant runtime
@@ -292,7 +124,6 @@ class Complexity(Resource):
             self.isError=1
             error = "An error occured while determining the best fitting model.\n"
             self.errorMessage = error + str(e)
-
 
     def get(self, code, test, lang):
 
