@@ -43,11 +43,6 @@ def generate_inputs_for_code(
             num_info=data.number_details,
             num_inputs=settings.MAX_INPUTS,
         )
-    elif data.input_type == 2:  # array
-        return input_generator.generate_array_inputs(
-            arr_info=data.array_details,
-            num_inputs=settings.MAX_INPUTS,
-        )
     else:
         return None
 

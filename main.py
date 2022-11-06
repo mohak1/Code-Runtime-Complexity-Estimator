@@ -1,5 +1,6 @@
 """this is the entrypoint file"""
 # standard library imports
+import json
 
 # external library imports
 from typing import Any
@@ -10,7 +11,7 @@ import requests
 from models import compiler_data, website_data
 from helpers import input_generator as ig
 from helpers import code_compiler
-import settings
+from helpers import model_fitting
 
 app = FastAPI(debug=True)
 
@@ -60,6 +61,7 @@ async def estimate_complexity(
         return "`input_type` value not recognised"
     
     # submit inputs to the compiler
+    breakpoint()
     submission_tokens_dict = {}
     for inp in input_list:
         if (token:=code_compiler.create_submission(
@@ -69,20 +71,31 @@ async def estimate_complexity(
         )):
             submission_tokens_dict[token] = inp
 
+    is_input_case_string = False
     if data.input_type == '0': # string; compare against length
-        ...
+        is_input_case_string = True
     elif data.input_type == '1': # number: compare against number
-        ...
+        is_input_case_string = False
     elif data.input_type == '2':
         if data.array_details.element_type in [1, 2]: # number;
-            ...
+            is_input_case_string = False
         else: # string; compare against length
-            ...
+            is_input_case_string = True
+
     # get runtime and memory of each submission
     output_temp_list = []
     for token in submission_tokens_dict:
         code_input = submission_tokens_dict[token]
         if (output := code_compiler.get_submission_result(token)):
-            output_temp_list.append({code_input: [output[0], output[1]]})
-        else:
-            output_temp_list.append({code_input: None})
+            output_temp_list.append([code_input, output[0], output[1]])
+    
+    # estimate time complexity and return the best fitting model
+    if is_input_case_string:
+        x_data = [len(i[0]) for i in output_temp_list]
+    else:
+        x_data = [i[0] for i in output_temp_list]
+    runtime_list = [i[1] for i in output_temp_list]
+
+    out = model_fitting.get_complexity_estimates(x_data, runtime_list)
+    return out
+   
