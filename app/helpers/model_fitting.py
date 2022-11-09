@@ -1,8 +1,10 @@
+import json
+from typing import List, Union
+
 import scipy
 import numpy as np
-from typing import List, Union
-import json
-from helpers import complexity_models
+
+from app.helpers import complexity_models
 
 def get_mean_squared_error(
     outputs_of_model: List[float], actual_runtimes: List[float]
@@ -12,71 +14,72 @@ def get_mean_squared_error(
 def get_complexity_estimates(
     x_data: List[Union[int, float]], runtime_list: List[float]
 ) -> json:
-    #constant
+    # get the arguments for each model that fit the curve best
+    #constant model
     constant_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.constant_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0]
     )
-    constantOutput = complexity_models.constant_model(x_data, *constant_args)
-    constantError = get_mean_squared_error(constantOutput, runtime_list)
+    constant_output = complexity_models.constant_model(x_data, *constant_args)
+    constant_error = get_mean_squared_error(constant_output, runtime_list)
     
-    #logarithmic
+    #logarithmic model
     log_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.logarithmic_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0,0]
     )
-    logarithmicOutput = complexity_models.logarithmic_model(x_data, *log_args)
-    logarithmicError = get_mean_squared_error(logarithmicOutput, runtime_list)
+    logarithmic_output = complexity_models.logarithmic_model(x_data, *log_args)
+    logarithmic_error = get_mean_squared_error(logarithmic_output, runtime_list)
     
-    #linear
+    #linear model
     linear_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.linear_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0,0]
     )
-    linearOutput = complexity_models.linear_model(x_data, *linear_args)
-    linearError = get_mean_squared_error(linearOutput, runtime_list)
+    linear_output = complexity_models.linear_model(x_data, *linear_args)
+    linear_error = get_mean_squared_error(linear_output, runtime_list)
     
-    #quasilinear
+    #quasilinear model
     quasi_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.quasilinear_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0,0]
     )
-    quasilinearOutput = complexity_models.quasilinear_model(
+    quasilinear_output = complexity_models.quasilinear_model(
         x_data, *quasi_args
     )
-    quasilinearError = get_mean_squared_error(quasilinearOutput, runtime_list)
+    quasilinear_error = get_mean_squared_error(quasilinear_output, runtime_list)
     
-    #quadratic
+    #quadratic model
     quadratic_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.quadratic_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0,0,0]
     )
-    quadraticOutput = complexity_models.quadratic_model(
+    quadratic_output = complexity_models.quadratic_model(
         x_data, *quadratic_args
     )
-    quadraticError = get_mean_squared_error(quadraticOutput, runtime_list)
+    quadratic_error = get_mean_squared_error(quadratic_output, runtime_list)
     
-    #exponential
+    #exponential model
     exponential_args, _ = scipy.optimize.curve_fit(
         f=complexity_models.exponential_model, method="lm", xdata=x_data,
         ydata=runtime_list, p0=[0,0]
     )
-    exponentialOutput = complexity_models.exponential_model(
+    exponential_output = complexity_models.exponential_model(
         x_data, *exponential_args
     )
-    exponentialError = get_mean_squared_error(exponentialOutput, runtime_list)
+    exponential_error = get_mean_squared_error(exponential_output, runtime_list)
     
-    #least error model
+    # get the name of the least complexity model
     complexityList = [
         "Constant", "Logarithmic", "Linear", "Quasilinear",
         "Quadratic", "Exponential"
     ]
-    errorList = np.array([
-        constantError, logarithmicError, linearError, quasilinearError,
-        quadraticError, exponentialError
+    error_list = np.array([
+        constant_error, logarithmic_error, linear_error, quasilinear_error,
+        quadratic_error, exponential_error
     ])
-    lowestIndex = np.argmin(errorList)
-    best_fitting_model = complexityList[lowestIndex]
+    index_of_lowest_error = np.argmin(error_list)
+    best_fitting_model = complexityList[index_of_lowest_error]
     
     return {
         'estimatedComplexity': best_fitting_model,

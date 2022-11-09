@@ -1,5 +1,5 @@
-import numpy as np
 from typing import List
+import numpy as np
 
 def constant_model(x: List, a: float) -> np.array:
     # y = 0(x) + a

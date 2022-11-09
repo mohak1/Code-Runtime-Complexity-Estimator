@@ -1,21 +1,18 @@
 """this is the entrypoint file"""
 # standard library imports
-import json
+from typing import List, Union
+import functools
 
 # external library imports
-from typing import Any
 from fastapi import FastAPI, Response, status
-import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 # internal imports
-from models import compiler_data, website_data
-from helpers import input_generator as ig
-from helpers import code_compiler
-from helpers import model_fitting
+from app.models import website_data
+from app.helpers import code_compiler, model_fitting
 
 app = FastAPI(debug=True)
 
-from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
@@ -28,15 +25,16 @@ app.add_middleware(
 @app.get('/')
 def base_url():
     # include a list of the available endpoints
-    return 'available endpoints are: "/healthy", "ect"'
+    endpoints = '`/healthy` `/get_active_languages` `/estimate_complexity`'
+    return f'available endpoints are: {endpoints}'
 
 @app.get('/healthy')
 def health_check():
     return True
 
-
+@functools.lru_cache(maxsize=5)
 @app.get('/get_active_languages', status_code=status.HTTP_200_OK)
-def programming_languages(response: Response):
+def programming_languages(response: Response) -> Union[List, None]:
     # return the data by judge0
     # or an error code if fetch if not successful
     if language_list:=code_compiler.get_active_languages():
@@ -51,17 +49,16 @@ def programming_languages(response: Response):
 
 @app.post('/estimate_complexity', status_code=200)
 # decorator for catch-all exceptions
-async def estimate_complexity(
+def estimate_complexity(
         data: website_data.CodeSubmissions,
         response: Response
-    ):
+    ) -> Union[dict, str]:
     # gether inputs for the code
     if not (input_list := code_compiler.generate_inputs_for_code(data)):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return "`input_type` value not recognised"
     
     # submit inputs to the compiler
-    breakpoint()
     submission_tokens_dict = {}
     for inp in input_list:
         if (token:=code_compiler.create_submission(
@@ -76,26 +73,23 @@ async def estimate_complexity(
         is_input_case_string = True
     elif data.input_type == '1': # number: compare against number
         is_input_case_string = False
-    elif data.input_type == '2':
-        if data.array_details.element_type in [1, 2]: # number;
-            is_input_case_string = False
-        else: # string; compare against length
-            is_input_case_string = True
 
     # get runtime and memory of each submission
     output_temp_list = []
     for token in submission_tokens_dict:
         code_input = submission_tokens_dict[token]
         if (output := code_compiler.get_submission_result(token)):
-            output_temp_list.append([code_input, output[0], output[1]])
-    
+            output_temp_list.append([code_input, output])
+    # return an error if output_temp_list is empty
+    if not output_temp_list:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return "an error occured while compiling the code"
     # estimate time complexity and return the best fitting model
     if is_input_case_string:
         x_data = [len(i[0]) for i in output_temp_list]
     else:
         x_data = [i[0] for i in output_temp_list]
     runtime_list = [i[1] for i in output_temp_list]
-
     out = model_fitting.get_complexity_estimates(x_data, runtime_list)
     return out
    

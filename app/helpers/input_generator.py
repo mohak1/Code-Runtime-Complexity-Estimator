@@ -1,9 +1,9 @@
-import base64
-import string
 import random
+import string
 from typing import List, Union
-import settings
-from models import website_data
+
+import app.settings as settings
+from app.models import website_data
 
 def get_string_input_sample_pool(allowed_char_code: str):
     """
