@@ -23,13 +23,3 @@ def parse_to_active_language_model(data: List[dict]) -> ActiveLanguagesList:
         return ActiveLanguagesList.parse_obj(data).__root__
     except Exception as e:
         raise custom_exceptions.ParsingToPydanticModelException(data, e)
-
-
-class Judge0Submissions(BaseModel):
-    """structure of submissions expected by judge0"""
-    ...
-
-
-class Judge0Response(BaseModel):
-    """structure of result returned by judge0"""
-    ...
