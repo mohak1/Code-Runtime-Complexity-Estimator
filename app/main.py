@@ -10,8 +10,10 @@ from fastapi.middleware.cors import CORSMiddleware
 # internal imports
 from app.models import website_data
 from app.helpers import code_compiler, model_fitting
+import app.settings as settings
+from app.helpers import decorators
 
-app = FastAPI(debug=True)
+app = FastAPI(debug=settings.debug_state)
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,17 +25,22 @@ app.add_middleware(
 
 
 @app.get('/')
+@decorators.catchall_exceptions
 def base_url():
     # include a list of the available endpoints
     endpoints = '`/healthy` `/get_active_languages` `/estimate_complexity`'
     return f'available endpoints are: {endpoints}'
 
+
 @app.get('/healthy')
+@decorators.catchall_exceptions
 def health_check():
     return True
 
+
 @functools.lru_cache(maxsize=5)
 @app.get('/get_active_languages', status_code=status.HTTP_200_OK)
+@decorators.catchall_exceptions
 def programming_languages(response: Response) -> Union[List, None]:
     # return the data by judge0
     # or an error code if fetch if not successful
@@ -48,6 +55,7 @@ def programming_languages(response: Response) -> Union[List, None]:
 
 
 @app.post('/estimate_complexity', status_code=200)
+@decorators.catchall_exceptions
 # decorator for catch-all exceptions
 def estimate_complexity(
         data: website_data.CodeSubmissions,
@@ -74,7 +82,7 @@ def estimate_complexity(
     elif data.input_type == '1': # number: compare against number
         is_input_case_string = False
 
-    # get runtime and memory of each submission
+    # get runtime of each submission
     output_temp_list = []
     for token in submission_tokens_dict:
         code_input = submission_tokens_dict[token]
@@ -92,4 +100,3 @@ def estimate_complexity(
     runtime_list = [i[1] for i in output_temp_list]
     out = model_fitting.get_complexity_estimates(x_data, runtime_list)
     return out
-   
