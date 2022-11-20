@@ -1,4 +1,7 @@
+# standard library imports
 from typing import List
+
+# external library imports
 import numpy as np
 
 def constant_model(x: List, a: float) -> np.array:

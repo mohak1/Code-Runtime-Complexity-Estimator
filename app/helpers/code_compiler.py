@@ -1,9 +1,12 @@
 """methods used for communicating with the Judge0 compiler"""
-from typing import List, Union, Tuple
+# standard library imports
+from typing import List, Union, Tuple, Set
 import time
 
+# external library imports
 import requests
 
+# internal imports
 from app.helpers import input_generator
 from app.models import website_data
 import app.settings as settings
@@ -38,7 +41,7 @@ def generate_inputs_for_code(
     else:
         return None
 
-def create_submission( code: str, language_id: str, code_input: str) -> str:
+def create_submission(code: str, language_id: str, code_input: str) -> str:
     # creates a single submission in the compiler
     endpoint = settings.COMPILER_BASE_URL+'/submissions/?'\
         f'base64_encoded=false&wait=false'
@@ -54,10 +57,22 @@ def create_submission( code: str, language_id: str, code_input: str) -> str:
         return result['token']
     return None
 
-def get_submission_result(token: str) -> Union[float, None]:
+def get_submission_tokens_dict(
+    code: str, language_id: str, input_list: List[str]
+) -> dict:
+    submission_tokens_dict = {}
+    for inp in input_list:
+        if (token:=create_submission(
+            code=code,
+            language_id=language_id,
+            code_input=inp,
+        )):
+            submission_tokens_dict[token] = inp
+    return submission_tokens_dict
+
+def get_submission_result(token: str) -> Tuple[bool, Union[float, None]]:
     # gets the result of a created submission using the token
     endpoint = settings.COMPILER_BASE_URL+'/submissions/'+token
-    
     result = requests.get(endpoint)
     if result.status_code == 200:
         res_json = result.json()
@@ -68,8 +83,31 @@ def get_submission_result(token: str) -> Union[float, None]:
             return get_submission_result(token)
         elif res_json['status']['id'] == 3:
             # successfully ran and accepted
-            return float(res_json['time'])
+            return (True, float(res_json['time']))
+        elif res_json['status']['id'] == 5:
+            # time limit exceeded
+            return (False, res_json['message'])
         else:
-            return None
+            # runtime error occured
+            return (False, res_json['stderr'])
     else:
-        return None
+        # error occurred in the request
+        raise Exception(
+            f'error occurred while fetching submission result:\n{result.text}'
+        )
+
+def get_runtimes_from_tokens(tokens_dict: dict) -> Union[List[str], Set[str]]:
+    runtime_list = []
+    error_set = set()
+    for token in tokens_dict:
+        code_input = tokens_dict[token]
+        status, output = get_submission_result(token)
+        if status:
+            runtime_list.append([code_input, output])
+        else:
+            error_set.add(output)
+    if len(runtime_list) >= len(tokens_dict)//2:
+        # ignore errors if at least half of the inputs ran successfully
+        return False, runtime_list
+    # otherwise return errors
+    return True, error_set

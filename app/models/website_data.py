@@ -1,8 +1,11 @@
 """this file contains models to wrap data in the structure expected
 by the website"""
 
-from pydantic import BaseModel
+# standard library imports
 from typing import Optional, Union
+
+# external library imports
+from pydantic import BaseModel
 
 
 class CodeSubmissionStringDetails(BaseModel):

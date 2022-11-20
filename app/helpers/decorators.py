@@ -1,5 +1,8 @@
-from app.helpers import notifs
+# standard library imports
 import functools
+
+# internal imports
+from app.helpers import notifs
 
 def catchall_exceptions(func):
     @functools.wraps(func)
@@ -11,4 +14,6 @@ def catchall_exceptions(func):
             notifs.send_message_on_discord(
                 f'error occured in `{func.__name__}`\nerror trace: {e}'
             )
+            # raise an exception to make the response a server error
+            raise Exception('raising a server exception')
     return catches_all_exceptions

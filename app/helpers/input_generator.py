@@ -1,7 +1,9 @@
+# standard library imports
 import random
 import string
 from typing import List, Union
 
+# internal imports
 import app.settings as settings
 from app.models import website_data
 
