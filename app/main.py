@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # internal imports
 from app.models import website_data
-from app.helpers import code_compiler, model_fitting
+from app.helpers import code_compiler, estimate_complexity
 import app.settings as settings
 from app.helpers import decorators
 
@@ -57,7 +57,7 @@ def programming_languages(response: Response) -> Union[List, None]:
 @app.post('/estimate_complexity', status_code=200)
 @decorators.catchall_exceptions
 # decorator for catch-all exceptions
-def estimate_complexity(
+def estimate_code_complexity(
         data: website_data.CodeSubmissions,
         response: Response
     ) -> Union[dict, str]:
@@ -65,38 +65,25 @@ def estimate_complexity(
     if not (input_list := code_compiler.generate_inputs_for_code(data)):
         response.status_code = status.HTTP_400_BAD_REQUEST
         return "`input_type` value not recognised"
-    
-    # submit inputs to the compiler
-    submission_tokens_dict = {}
-    for inp in input_list:
-        if (token:=code_compiler.create_submission(
-            code=data.code,
-            language_id=data.language_id,
-            code_input=inp,
-        )):
-            submission_tokens_dict[token] = inp
 
-    is_input_case_string = False
-    if data.input_type == '0': # string; compare against length
-        is_input_case_string = True
-    elif data.input_type == '1': # number: compare against number
-        is_input_case_string = False
+    # submit inputs to the compiler
+    submission_tokens_dict = code_compiler.get_submission_tokens_dict(
+        code=data.code,
+        language_id=data.language_id,
+        input_list=input_list,
+    )
 
     # get runtime of each submission
-    output_temp_list = []
-    for token in submission_tokens_dict:
-        code_input = submission_tokens_dict[token]
-        if (output := code_compiler.get_submission_result(token)):
-            output_temp_list.append([code_input, output])
-    # return an error if output_temp_list is empty
-    if not output_temp_list:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return "an error occured while compiling the code"
+    is_error, outputs = code_compiler.get_runtimes_from_tokens(
+        submission_tokens_dict
+    )
+    if is_error:
+        # send one of the compiler errors
+        response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+        return {'error': outputs}
+    
     # estimate time complexity and return the best fitting model
-    if is_input_case_string:
-        x_data = [len(i[0]) for i in output_temp_list]
-    else:
-        x_data = [i[0] for i in output_temp_list]
-    runtime_list = [i[1] for i in output_temp_list]
-    out = model_fitting.get_complexity_estimates(x_data, runtime_list)
-    return out
+    return estimate_complexity.get_complexity_estimates(
+        input_and_time_list=outputs,
+        input_type=data.input_type
+    )
