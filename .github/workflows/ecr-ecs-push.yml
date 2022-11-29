@@ -23,16 +23,16 @@ jobs:
           registry-type: public
 
 
-  # build-image:
-  #   name: Build and Tag Docker Image
-  #   needs: [login-to-ecr]
-  #   env:
-  #     REGISTRY: public.ecr.aws
-  #     REGISTRY_ALIAS: a4q2d8e1
-  #     REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
-  #     IMAGE_TAG: ${{github.sha}}
-  #   run:
-  #     docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+  build-image:
+    name: Build and Tag Docker Image
+    needs: [login-to-ecr]
+    env:
+      REGISTRY: public.ecr.aws
+      REGISTRY_ALIAS: a4q2d8e1
+      REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
+      IMAGE_TAG: ${{github.sha}}
+    run:
+      docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
 
 
   # push-image:
