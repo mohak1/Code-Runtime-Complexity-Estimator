@@ -18,9 +18,9 @@ jobs:
         aws-region: ${{secrets.AWS_REGION}}
 
     - name: Login to ECR
-    uses: aws-actions/amazon-ecr-login@v1
-      with:
-        registry-type: public
+      uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
 
 
   build-image:
