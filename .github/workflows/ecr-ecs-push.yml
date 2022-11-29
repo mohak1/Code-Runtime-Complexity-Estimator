@@ -27,6 +27,7 @@ jobs:
     name: Build and Tag Docker Image
     runs-on: ubuntu-latest
     needs: [login-to-ecr]
+    uses: actions/checkout@v3
     env:
       REPOSITORY: public.ecr.aws
       REPOSITORY_ALIAS: ${{secrets.ECR_REPOSITORY_ALIAS}}
