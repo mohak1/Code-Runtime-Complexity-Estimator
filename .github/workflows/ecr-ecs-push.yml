@@ -22,27 +22,22 @@ jobs:
       with:
         registry-type: public
 
-
-  build-image:
+  build-and-push-image:
     name: Build and Tag Docker Image
     runs-on: ubuntu-latest
     needs: [login-to-ecr]
     env:
       REGISTRY: public.ecr.aws
-      REGISTRY_ALIAS: a4q2d8e1
+      REGISTRY_ALIAS: ${{secrets.ECR_REGISTRY_ALIAS}}
       REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
       IMAGE_TAG: ${{github.sha}}
-    run:
-      docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+    steps:
+    - name: Build Docker Image
+      uses: actions/checkout@v3
+      run: |
+        docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
 
-
-  # push-image:
-  #   needs: [login-to-ecr, build-image]
-  #   runds-on: ubuntu-latest
-  #   env:
-  #     REGISTRY: public.ecr.aws
-  #     REGISTRY_ALIAS: a4q2d8e1
-  #     REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
-  #     IMAGE_TAG: ${{github.sha}}
-  #   run:
-  #     docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+    - name: Push Docker Image to ECR
+      uses: actions/checkout@v3
+      run: |
+        docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
