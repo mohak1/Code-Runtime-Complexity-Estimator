@@ -1,0 +1,35 @@
+
+on:
+  push:
+    branches: [refactor/fastapi]
+
+jobs:
+  login-to-ecr:
+    name: Login to Amazon ECR Public
+    uses: aws-actions/amazon-ecr-login@v1
+    with:
+      registry-type: public
+
+
+  # build-image:
+  #   name: Build and Tag Docker Image
+  #   needs: [login-to-ecr]
+  #   env:
+  #     REGISTRY: public.ecr.aws
+  #     REGISTRY_ALIAS: a4q2d8e1
+  #     REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
+  #     IMAGE_TAG: ${{github.sha}}
+  #   run:
+  #     docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+
+
+  # push-image:
+  #   needs: [login-to-ecr, build-image]
+  #   runds-on: ubuntu-latest
+  #   env:
+  #     REGISTRY: public.ecr.aws
+  #     REGISTRY_ALIAS: a4q2d8e1
+  #     REPOSITORY: ${{steps.login-to-ecr.outputs.registry}}
+  #     IMAGE_TAG: ${{github.sha}}
+  #   run:
+  #     docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
