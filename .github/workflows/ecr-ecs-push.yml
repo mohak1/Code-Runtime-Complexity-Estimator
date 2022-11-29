@@ -33,11 +33,9 @@ jobs:
       IMAGE_TAG: ${{github.sha}}
     steps:
     - name: Build Docker Image
-      uses: actions/checkout@v3
       run: |
         docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
 
     - name: Push Docker Image to ECR
-      uses: actions/checkout@v3
       run: |
         docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
