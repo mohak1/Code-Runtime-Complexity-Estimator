@@ -6,6 +6,7 @@ on:
 jobs:
   login-to-ecr:
     name: Configure AWS and Login to ECR
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
