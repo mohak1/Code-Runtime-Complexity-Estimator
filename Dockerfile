@@ -13,7 +13,7 @@ COPY app/. ./app/
 ENV is_dockerised=True
 
 # document the port
-EXPOSE 80
+EXPOSE 8000
 
 # start the server
-ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+ENTRYPOINT ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
