@@ -1,0 +1,293 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-2:163920873006:task-definition/code-complexity-task:24",
+    "containerDefinitions": [
+        {
+            "name": "judge0-server",
+            "image": "judge0/judge0:latest",
+            "cpu": 0,
+            "memoryReservation": 256,
+            "links": [],
+            "portMappings": [
+                {
+                    "containerPort": 2358,
+                    "hostPort": 2358,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": false,
+            "entryPoint": [],
+            "command": [],
+            "environment": [],
+            "mountPoints": [
+                {
+                    "sourceVolume": "server-worker-volume",
+                    "containerPath": "/data"
+                }
+            ],
+            "volumesFrom": [],
+            "dependsOn": [
+                {
+                    "containerName": "db",
+                    "condition": "START"
+                },
+                {
+                    "containerName": "judge0-redis",
+                    "condition": "START"
+                }
+            ],
+            "privileged": true,
+            "readonlyRootFilesystem": false,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/code-complexity-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "healthCheck": {
+                "command": [
+                    "CMD",
+                    "curl -f http://localhost:2358/workers"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3
+            }
+        },
+        {
+            "name": "db",
+            "image": "postgres:13.0",
+            "cpu": 0,
+            "memoryReservation": 128,
+            "portMappings": [
+                {
+                    "containerPort": 5432,
+                    "hostPort": 5432,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [
+                {
+                    "name": "POSTGRES_USER",
+                    "value": "postgres"
+                },
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "value": "YourPasswordHere1234"
+                },
+                {
+                    "name": "REDIS_HOST",
+                    "value": "redis"
+                },
+                {
+                    "name": "REDIS_PASSWORD",
+                    "value": "YourPasswordHere1234"
+                },
+                {
+                    "name": "POSTGRES_DB",
+                    "value": "postgres"
+                },
+                {
+                    "name": "POSTGRES_HOST",
+                    "value": "db"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "postgres-db-volume",
+                    "containerPath": "/data"
+                }
+            ],
+            "volumesFrom": [],
+            "privileged": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/code-complexity-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "pg_isready -U postgres"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3
+            }
+        },
+        {
+            "name": "judge0-redis",
+            "image": "redis:6.0",
+            "cpu": 0,
+            "memoryReservation": 128,
+            "portMappings": [
+                {
+                    "containerPort": 6379,
+                    "hostPort": 6379,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [
+                "bash",
+                "-c",
+                "docker-entrypoint.sh --appendonly yes --requirepass YourPasswordHere1234"
+            ],
+            "environment": [
+                {
+                    "name": "POSTGRES_USER",
+                    "value": "judge0"
+                },
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "value": "YourPasswordHere1234"
+                },
+                {
+                    "name": "REDIS_HOST",
+                    "value": "redis"
+                },
+                {
+                    "name": "REDIS_PASSWORD",
+                    "value": "YourPasswordHere1234"
+                },
+                {
+                    "name": "POSTGRES_DB",
+                    "value": "judge0"
+                },
+                {
+                    "name": "POSTGRES_HOST",
+                    "value": "db"
+                }
+            ],
+            "mountPoints": [
+                {
+                    "sourceVolume": "redis-volume",
+                    "containerPath": "/data"
+                }
+            ],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/code-complexity-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        },
+        {
+            "name": "python-server",
+            "image": "public.ecr.aws/a4q2d8e1/code-complexity-backend",
+            "cpu": 0,
+            "memoryReservation": 128,
+            "portMappings": [
+                {
+                    "containerPort": 8000,
+                    "hostPort": 8000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [
+                {
+                    "name": "is_dockerised",
+                    "value": "True"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/code-complexity-task",
+                    "awslogs-region": "eu-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "healthCheck": {
+                "command": [
+                    "CMD",
+                    "curl -f http://localhost:8000/healthy"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3,
+                "startPeriod": 30
+            }
+        }
+    ],
+    "family": "code-complexity-task",
+    "networkMode": "host",
+    "revision": 24,
+    "volumes": [
+        {
+            "name": "server-worker-volume",
+            "host": {
+                "sourcePath": "server-worker-dir"
+            }
+        },
+        {
+            "name": "postgres-db-volume",
+            "host": {
+                "sourcePath": "postgres-db-dir"
+            }
+        },
+        {
+            "name": "redis-volume",
+            "host": {
+                "sourcePath": "redis-dir"
+            }
+        }
+    ],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.24"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.privileged-container"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "ecs.capability.container-health-check"
+        },
+        {
+            "name": "ecs.capability.container-ordering"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EXTERNAL",
+        "EC2"
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "registeredAt": "2022-11-19T16:21:52.244Z",
+    "registeredBy": "arn:aws:iam::163920873006:user/mohakm",
+    "tags": []
+}
