@@ -44,7 +44,7 @@ jobs:
       run: |
         jq --arg image_name "$REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME" \
           --arg image_tag "$IMAGE_TAG" \
-          '.containerDefinitions[3].image=$image_name:$image_tag' \
+          '.containerDefinitions[3].image="$image_name:$image_tag"' \
           ecr_task_definition.json | sponge ecr_task_definition.json
 
     - name: read ecr_task_definition json
