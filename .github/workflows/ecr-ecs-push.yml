@@ -38,7 +38,7 @@ jobs:
         docker push $REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME:$IMAGE_TAG
 
     - name: install more-utils
-        run: sudo apt-get install moreutils
+        run: sudo apt-get -y install moreutils
 
     - name: Update python-server image ID in ecr_task_definition.json
         run: |
