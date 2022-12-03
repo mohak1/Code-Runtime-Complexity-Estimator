@@ -56,6 +56,6 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ecr_task_definition.json
-        service: code-complexity-service
+        # service: code-complexity-service
         cluster: code-complexity-cluster
         wait-for-service-stability: true
