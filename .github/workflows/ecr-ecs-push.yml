@@ -4,7 +4,7 @@ on:
     branches: [refactor/fastapi]
 
 jobs:
-  login-to-ecr:
+  Push-to-ECR-and-deploy-to-ECS:
     name: Login to ECR, Build Image and Push to ECR
     runs-on: ubuntu-latest
     env:
