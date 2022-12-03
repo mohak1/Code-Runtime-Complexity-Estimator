@@ -201,6 +201,10 @@
                 {
                     "name": "is_dockerised",
                     "value": "True"
+                },
+                {
+                    "name": "DISCORD_URL",
+                    "value": "replace-from-secrets"
                 }
             ],
             "mountPoints": [],
