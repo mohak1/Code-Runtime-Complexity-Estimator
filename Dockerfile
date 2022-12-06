@@ -13,7 +13,11 @@ COPY app/. ./app/
 ENV is_dockerised=True
 
 # document the port
-EXPOSE 7000
+EXPOSE 8000
+
+# update packages and install curl
+RUN apt-get update
+RUN apt-get install curl -y
 
 # start the server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
