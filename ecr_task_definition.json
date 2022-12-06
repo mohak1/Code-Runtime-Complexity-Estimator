@@ -51,7 +51,7 @@
                 "interval": 30,
                 "timeout": 5,
                 "retries": 5,
-                "startPeriod": 30
+                "startPeriod": 5
             }
         },
         {
@@ -117,7 +117,7 @@
                 "interval": 30,
                 "timeout": 5,
                 "retries": 5,
-                "startPeriod": 30
+                "startPeriod": 5
             }
         },
         {
@@ -188,7 +188,7 @@
                 "interval": 30,
                 "timeout": 5,
                 "retries": 5,
-                "startPeriod": 30
+                "startPeriod": 5
             }
         },
         {
@@ -234,7 +234,7 @@
                 "interval": 30,
                 "timeout": 5,
                 "retries": 5,
-                "startPeriod": 30
+                "startPeriod": 5
             }
         }
     ],
