@@ -5,7 +5,6 @@
             "image": "judge0/judge0:latest",
             "cpu": 0,
             "memoryReservation": 256,
-            "links": [],
             "portMappings": [
                 {
                     "containerPort": 2358,
@@ -13,7 +12,7 @@
                     "protocol": "tcp"
                 }
             ],
-            "essential": false,
+            "essential": true,
             "entryPoint": [],
             "command": [],
             "environment": [],
@@ -46,12 +45,13 @@
             },
             "healthCheck": {
                 "command": [
-                    "CMD",
-                    "curl -f http://localhost:2358/workers"
+                    "CMD-SHELL",
+                    "curl -f http://0.0.0.0:2358/workers"
                 ],
                 "interval": 30,
                 "timeout": 5,
-                "retries": 3
+                "retries": 5,
+                "startPeriod": 30
             }
         },
         {
@@ -67,8 +67,6 @@
                 }
             ],
             "essential": true,
-            "entryPoint": [],
-            "command": [],
             "environment": [
                 {
                     "name": "POSTGRES_USER",
@@ -118,7 +116,8 @@
                 ],
                 "interval": 30,
                 "timeout": 5,
-                "retries": 3
+                "retries": 5,
+                "startPeriod": 30
             }
         },
         {
@@ -138,7 +137,7 @@
             "command": [
                 "bash",
                 "-c",
-                "docker-entrypoint.sh --appendonly yes --requirepass YourPasswordHere1234"
+                "docker-entrypoint.sh --appendonly yes"
             ],
             "environment": [
                 {
@@ -180,6 +179,16 @@
                     "awslogs-region": "eu-west-2",
                     "awslogs-stream-prefix": "ecs"
                 }
+            },
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "redis-cli ping"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 5,
+                "startPeriod": 30
             }
         },
         {
@@ -189,8 +198,8 @@
             "memoryReservation": 128,
             "portMappings": [
                 {
-                    "containerPort": 8000,
-                    "hostPort": 8000,
+                    "containerPort": 7000,
+                    "hostPort": 7000,
                     "protocol": "tcp"
                 }
             ],
@@ -219,12 +228,12 @@
             },
             "healthCheck": {
                 "command": [
-                    "CMD",
-                    "curl -f http://localhost:8000/healthy"
+                    "CMD-SHELL",
+                    "curl -f http://0.0.0.0:7000/healthy"
                 ],
                 "interval": 30,
                 "timeout": 5,
-                "retries": 3,
+                "retries": 5,
                 "startPeriod": 30
             }
         }
@@ -254,6 +263,5 @@
     "placementConstraints": [],
     "requiresCompatibilities": [
         "EC2"
-    ],
-    "tags": []
+    ]
 }
