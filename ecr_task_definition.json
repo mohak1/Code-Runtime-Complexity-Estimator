@@ -228,8 +228,8 @@
             },
             "healthCheck": {
                 "command": [
-                    "CMD",
-                    "curl -f http://0.0.0.0:7000/healthy"
+                    "CMD-SHELL",
+                    "curl -f http://0.0.0.0:8000/healthy"
                 ],
                 "interval": 30,
                 "timeout": 5,
