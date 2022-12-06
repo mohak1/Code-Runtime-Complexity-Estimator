@@ -228,7 +228,7 @@
             },
             "healthCheck": {
                 "command": [
-                    "CMD-SHELL",
+                    "CMD",
                     "curl -f http://0.0.0.0:7000/healthy"
                 ],
                 "interval": 30,
