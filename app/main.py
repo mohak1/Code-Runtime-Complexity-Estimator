@@ -2,6 +2,7 @@
 # standard library imports
 from typing import List, Union
 import functools
+import logging
 
 # external library imports
 from fastapi import FastAPI, Response, status
@@ -23,6 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Define the filter
+class EndpointFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.args[2] != "/healthy"
+
+# Add filter to the logger
+logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
 
 @app.get('/')
 @decorators.catchall_exceptions
