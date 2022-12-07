@@ -67,3 +67,10 @@ jobs:
         service: code-complexity-service
         cluster: code-complexity-cluster
         wait-for-service-stability: true
+
+    - name: Discord notification
+    env:
+      DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_URL}}
+    uses: Ilshidur/action-discord@master
+    with:
+      args: 'Deployment completed'
