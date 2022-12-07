@@ -11,9 +11,11 @@ def catchall_exceptions(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
+            unpacked_kwargs = {**kwargs}
             notifs.send_message_on_discord(
                 f'error occured in `{func.__name__}`\nerror trace: {e}'
+                f'\nargs: {[*args]}\nkwargs: {unpacked_kwargs}'
             )
-            # raise an exception to make the response a server error
-            raise Exception('raising a server exception')
+            # raise the caught exception for logging
+            raise e
     return catches_all_exceptions
