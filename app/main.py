@@ -41,11 +41,6 @@ def base_url():
     return f'available endpoints are: {endpoints}'
 
 
-@app.get('/test_discord_integration')
-@decorators.catchall_exceptions
-def raise_an_exception():
-    raise Exception('discord integration test')
-
 @app.get('/healthy')
 @decorators.catchall_exceptions
 def health_check():
