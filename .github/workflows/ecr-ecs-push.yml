@@ -69,8 +69,8 @@ jobs:
         wait-for-service-stability: true
 
     - name: Discord notification
-    env:
-      DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_URL}}
-    uses: Ilshidur/action-discord@master
-    with:
-      args: 'Deployment completed'
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_URL}}
+      with:
+        args: 'Deployment completed'
