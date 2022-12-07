@@ -25,12 +25,13 @@ app.add_middleware(
 )
 
 # Define the filter
-class EndpointFilter(logging.Filter):
+class HealthyEndpointFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        return record.args[2] != "/healthy"
+        return '/healthy' not in record.args
 
 # Add filter to the logger
-logging.getLogger("uvicorn.access").addFilter(EndpointFilter())
+logging.getLogger("uvicorn.access").addFilter(HealthyEndpointFilter())
+
 
 @app.get('/')
 @decorators.catchall_exceptions
