@@ -65,7 +65,6 @@ def programming_languages(response: Response) -> Union[List, None]:
 
 @app.post('/estimate_complexity', status_code=200)
 @decorators.catchall_exceptions
-# decorator for catch-all exceptions
 def estimate_code_complexity(
         data: website_data.CodeSubmissions,
         response: Response
