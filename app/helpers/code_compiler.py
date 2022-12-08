@@ -43,7 +43,7 @@ def generate_inputs_for_code(
 
 def create_submission(code: str, language_id: str, code_input: str) -> str:
     # creates a single submission in the compiler
-    endpoint = settings.COMPILER_BASE_URL+'/submissions/?'\
+    endpoint = settings.COMPILER_BASE_URL+'/submissions?'\
         f'base64_encoded=false&wait=false'
 
     request_body = {
