@@ -25,7 +25,7 @@ def min_max_normalise(data: List[float]) -> List[float]:
 def prepare_data_for_complexity_estimation(
     input_and_time_list: List[Tuple[str, str]],
     input_type: str,
-):
+) -> Tuple[List[int], List[float]]:
     if input_type == settings.STRING_INPUT_CODE:
         x_data = [len(i[0]) for i in input_and_time_list]
     else:
