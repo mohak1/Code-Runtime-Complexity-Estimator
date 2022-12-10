@@ -11,10 +11,16 @@ import numpy as np
 from app.helpers import complexity_models
 import app.settings as settings
 
-def get_mean_squared_error(
-    outputs_of_model: List[float], actual_runtimes: List[float]
+def get_standard_error(
+    outputs_of_model: np, actual_runtimes: List[float]
 ) -> List[float]:
-    return (sum((outputs_of_model - actual_runtimes)**2))/len(actual_runtimes)
+    diff = outputs_of_model - actual_runtimes
+    return np.std(diff)/np.sqrt(len(diff))
+
+def min_max_normalise(data: List[float]) -> List[float]:
+    data = np.array(data)
+    min_nax_norm = (data-data.min()) / (data.max()-data.min()+0.00001)
+    return min_nax_norm.tolist()
 
 def prepare_data_for_complexity_estimation(
     input_and_time_list: List[Tuple[str, str]],
@@ -25,7 +31,8 @@ def prepare_data_for_complexity_estimation(
     else:
         x_data = [i[0] for i in input_and_time_list]
     runtime_list = [i[1] for i in input_and_time_list]
-    return x_data, runtime_list
+    normalised_runtime_list = min_max_normalise(runtime_list)
+    return x_data, normalised_runtime_list
 
 def get_complexity_estimates(
     input_and_time_list: List[Tuple[str, str]],
@@ -41,7 +48,7 @@ def get_complexity_estimates(
         ydata=runtime_list, p0=[0]
     )
     constant_output = complexity_models.constant_model(x_data, *constant_args)
-    constant_error = get_mean_squared_error(constant_output, runtime_list)
+    constant_error = get_standard_error(constant_output, runtime_list)
     
     #logarithmic model
     log_args, _ = scipy.optimize.curve_fit(
@@ -49,7 +56,7 @@ def get_complexity_estimates(
         ydata=runtime_list, p0=[0,0]
     )
     logarithmic_output = complexity_models.logarithmic_model(x_data, *log_args)
-    logarithmic_error = get_mean_squared_error(logarithmic_output, runtime_list)
+    logarithmic_error = get_standard_error(logarithmic_output, runtime_list)
     
     #linear model
     linear_args, _ = scipy.optimize.curve_fit(
@@ -57,7 +64,7 @@ def get_complexity_estimates(
         ydata=runtime_list, p0=[0,0]
     )
     linear_output = complexity_models.linear_model(x_data, *linear_args)
-    linear_error = get_mean_squared_error(linear_output, runtime_list)
+    linear_error = get_standard_error(linear_output, runtime_list)
     
     #quasilinear model
     quasi_args, _ = scipy.optimize.curve_fit(
@@ -67,7 +74,7 @@ def get_complexity_estimates(
     quasilinear_output = complexity_models.quasilinear_model(
         x_data, *quasi_args
     )
-    quasilinear_error = get_mean_squared_error(quasilinear_output, runtime_list)
+    quasilinear_error = get_standard_error(quasilinear_output, runtime_list)
     
     #quadratic model
     quadratic_args, _ = scipy.optimize.curve_fit(
@@ -77,7 +84,7 @@ def get_complexity_estimates(
     quadratic_output = complexity_models.quadratic_model(
         x_data, *quadratic_args
     )
-    quadratic_error = get_mean_squared_error(quadratic_output, runtime_list)
+    quadratic_error = get_standard_error(quadratic_output, runtime_list)
     
     #exponential model
     exponential_args, _ = scipy.optimize.curve_fit(
@@ -87,7 +94,7 @@ def get_complexity_estimates(
     exponential_output = complexity_models.exponential_model(
         x_data, *exponential_args
     )
-    exponential_error = get_mean_squared_error(exponential_output, runtime_list)
+    exponential_error = get_standard_error(exponential_output, runtime_list)
     
     # get the name of the least complexity model
     complexity_list = [
