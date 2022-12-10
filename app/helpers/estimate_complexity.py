@@ -43,54 +43,120 @@ def get_complexity_estimates(
     )
     # get the arguments for each model that fit the curve best
     #constant model
-    constant_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.constant_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0]
-    )
+    try:
+        constant_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.constant_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'constant parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            constant_args = [runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     constant_output = complexity_models.constant_model(x_data, *constant_args)
     constant_error = get_standard_error(constant_output, runtime_list)
     
     #logarithmic model
-    log_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.logarithmic_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0,0]
-    )
+    try:
+        log_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.logarithmic_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0,0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'log parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            log_args = [runtime_list[0],runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     logarithmic_output = complexity_models.logarithmic_model(x_data, *log_args)
     logarithmic_error = get_standard_error(logarithmic_output, runtime_list)
     
     #linear model
-    linear_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.linear_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0,0]
-    )
+    try:
+        linear_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.linear_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0,0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'linear parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            linear_args = [runtime_list[0],runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     linear_output = complexity_models.linear_model(x_data, *linear_args)
     linear_error = get_standard_error(linear_output, runtime_list)
     
     #quasilinear model
-    quasi_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.quasilinear_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0,0]
-    )
+    try:
+        quasi_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.quasilinear_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0,0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'quasi parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            quasi_args = [runtime_list[0],runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     quasilinear_output = complexity_models.quasilinear_model(
         x_data, *quasi_args
     )
     quasilinear_error = get_standard_error(quasilinear_output, runtime_list)
     
     #quadratic model
-    quadratic_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.quadratic_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0,0,0]
-    )
+    try:
+        quadratic_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.quadratic_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0,0,0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'quadratic parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            quadratic_args = [runtime_list[0],runtime_list[0],runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     quadratic_output = complexity_models.quadratic_model(
         x_data, *quadratic_args
     )
     quadratic_error = get_standard_error(quadratic_output, runtime_list)
     
     #exponential model
-    exponential_args, _ = scipy.optimize.curve_fit(
-        f=complexity_models.exponential_model, method="lm", xdata=x_data,
-        ydata=runtime_list, p0=[0,0]
-    )
+    try:
+        exponential_args, _ = scipy.optimize.curve_fit(
+            f=complexity_models.exponential_model, method="lm", xdata=x_data,
+            ydata=runtime_list, p0=[0,0]
+        )
+    except RuntimeError as e:
+        if 'Optimal parameters not found' in e.args[0]:
+            logging.debug(
+                f'exponential parameters not found for points. Error trace: {e} '
+                f'x_data={x_data}\nruntime_list={runtime_list}'
+            )
+            exponential_args = [runtime_list[0],runtime_list[0]]
+        else:
+            raise RuntimeError(e)
+
     exponential_output = complexity_models.exponential_model(
         x_data, *exponential_args
     )
