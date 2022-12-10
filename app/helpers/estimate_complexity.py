@@ -1,6 +1,7 @@
 # standard library imports
 import json
-from typing import List, Union, Tuple
+from typing import List, Tuple
+import logging
 
 # external library imports
 import scipy
