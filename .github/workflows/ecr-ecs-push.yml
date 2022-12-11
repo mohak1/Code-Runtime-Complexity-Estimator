@@ -42,7 +42,7 @@ jobs:
     - name: Update python-server image ID in ecr_task_definition.json
       run: |
         jq --arg image_val "$REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME:$IMAGE_TAG" \
-          '.containerDefinitions[3].image=$image_val' \
+          '.containerDefinitions[0].image=$image_val' \
           ecr_task_definition.json | sponge ecr_task_definition.json
 
     - name: Set discord webhook URL from git secrets in ecr_task_definition.json
@@ -50,7 +50,7 @@ jobs:
         DISCORD_URL: ${{secrets.DISCORD_WEBHOOK_URL}}
       run: |
         jq --arg discord_url "$DISCORD_URL" \
-          '.containerDefinitions[3].environment[1].value=$discord_url' \
+          '.containerDefinitions[0].environment[1].value=$discord_url' \
           ecr_task_definition.json | sponge ecr_task_definition.json
 
     - name: Change region for ECS
