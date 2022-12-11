@@ -99,6 +99,7 @@ async def get_submission_result(
             res_json = await result.json()
             # check the status
             if res_json['status']['id'] in [1, 2]:
+                await asyncio.sleep(1)
                 return await get_submission_result(token, session)
             elif res_json['status']['id'] == 3:
                 # successfully ran and accepted
