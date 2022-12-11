@@ -64,8 +64,8 @@ def programming_languages(response: Response) -> Union[List, None]:
 
 
 @app.post('/estimate_complexity', status_code=200)
-@decorators.catchall_exceptions
-def estimate_code_complexity(
+# @decorators.catchall_exceptions
+async def estimate_code_complexity(
         data: website_data.CodeSubmissions,
         response: Response
     ) -> Union[dict, str]:
@@ -75,14 +75,14 @@ def estimate_code_complexity(
         return "`input_type` value not recognised"
 
     # submit inputs to the compiler
-    submission_tokens_dict = code_compiler.get_submission_tokens_dict(
+    submission_tokens_dict = await code_compiler.get_submission_tokens_dict(
         code=data.code,
         language_id=data.language_id,
         input_list=input_list,
     )
 
     # get runtime of each submission
-    is_error, outputs = code_compiler.get_runtimes_from_tokens(
+    is_error, outputs = await code_compiler.get_runtimes_from_tokens(
         submission_tokens_dict
     )
     if is_error:
