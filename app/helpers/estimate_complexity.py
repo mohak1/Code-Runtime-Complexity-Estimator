@@ -12,7 +12,7 @@ from app.helpers import complexity_models
 import app.settings as settings
 
 def get_standard_error(
-    outputs_of_model: np, actual_runtimes: List[float]
+    outputs_of_model: np.array, actual_runtimes: List[float]
 ) -> List[float]:
     diff = outputs_of_model - actual_runtimes
     return np.std(diff)/np.sqrt(len(diff))
