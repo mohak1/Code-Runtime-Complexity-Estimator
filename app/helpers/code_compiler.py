@@ -85,7 +85,6 @@ async def get_submission_tokens_dict(
         for i, token in enumerate(submissions_list):
             if token:
                 submission_tokens_dict[token] = input_list[i]
-
     return submission_tokens_dict
 
 async def get_submission_result(
