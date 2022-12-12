@@ -75,11 +75,18 @@ async def estimate_code_complexity(
         return "`input_type` value not recognised"
 
     # submit inputs to the compiler
-    submission_tokens_dict = await code_compiler.get_submission_tokens_dict(
+    if not (submission_tokens_dict:=await code_compiler.get_submission_tokens_dict(
         code=data.code,
         language_id=data.language_id,
         input_list=input_list,
-    )
+    )):
+        # no submission ids - failed to make submissions in compiler
+        logging.error(
+            'got empty submissions tokens dict; args:\n'
+            f'code={data.code}\nlanguage_id={data.language_id}\n'
+            f'inputs={input_list}'
+        )
+        raise Exception('empty submission tokens dict returned')
 
     # get runtime of each submission
     is_error, outputs = await code_compiler.get_runtimes_from_tokens(
