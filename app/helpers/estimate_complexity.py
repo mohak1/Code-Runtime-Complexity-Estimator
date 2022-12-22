@@ -184,4 +184,3 @@ def get_complexity_estimates(
         'quadratic_model': list(quadratic_args),
         'exponential_model': list(exponential_args)
     }
-
