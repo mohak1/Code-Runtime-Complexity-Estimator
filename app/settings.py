@@ -10,6 +10,11 @@ COMPILER_BASE_URL = 'http://0.0.0.0:2358'
 
 inside_docker = os.getenv('is_dockerised', False)
 if inside_docker:
+    # the server is hosted
     debug_state = False # no debug for deployed app
+    ALLOWED_ORIGIN_LSIT = [
+        'https://codecomplexity.netlify.app/',
+    ]
 else:
     debug_state = True
+    ALLOWED_ORIGIN_LIST = ['*']
