@@ -35,7 +35,7 @@ logging.getLogger("uvicorn.access").addFilter(HealthyEndpointFilter())
 
 @app.get('/')
 @decorators.catchall_exceptions
-def base_url():
+def base_url() -> str:
     # include a list of the available endpoints
     endpoints = '`/healthy` `/get_active_languages` `/estimate_complexity`'
     return f'available endpoints are: {endpoints}'
@@ -43,7 +43,7 @@ def base_url():
 
 @app.get('/healthy')
 @decorators.catchall_exceptions
-def health_check():
+def health_check() -> bool:
     return True
 
 

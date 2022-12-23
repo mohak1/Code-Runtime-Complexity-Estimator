@@ -7,7 +7,7 @@ from typing import List, Union
 import app.settings as settings
 from app.models import website_data
 
-def get_string_input_sample_pool(allowed_char_code: str):
+def get_string_input_sample_pool(allowed_char_code: str) -> str:
     """
     allowed_char_code str contains on/off flags
     allowed_char_code[0] -> are lowercase alphabets allowed

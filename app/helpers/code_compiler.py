@@ -13,7 +13,7 @@ from app.helpers import input_generator
 from app.models import website_data
 import app.settings as settings
 
-def get_active_languages() -> List[dict]:
+def get_active_languages() -> Union[List[dict], None]:
     endpoint = settings.COMPILER_BASE_URL+'/languages'
     result = requests.get(endpoint)
     if result.status_code == 200:
@@ -46,7 +46,7 @@ def generate_inputs_for_code(
 async def create_submission(
     code: str, language_id: str, code_input: str,
     session: aiohttp.ClientSession
-) -> str:
+) -> Union[str, None]:
     # creates a single submission in the compiler
     endpoint = settings.COMPILER_BASE_URL+'/submissions?'\
         f'base64_encoded=false&wait=false'
@@ -117,7 +117,7 @@ async def get_submission_result(
 
 async def get_runtimes_from_tokens(
     tokens_dict: dict
-) -> Union[List[str], Set[str]]:
+) -> Union[Tuple[bool, List[str]], Tuple[bool, Set[str]]]:
     runtime_list = []
     error_set = set()
     tasks = []
