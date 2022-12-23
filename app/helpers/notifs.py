@@ -1,6 +1,8 @@
 """sends a notification to discord"""
+# standard library imports
 import os
 
+# external library imports
 import requests
 
 def send_message_on_discord(message: str) -> None:
