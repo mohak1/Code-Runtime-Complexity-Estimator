@@ -13,6 +13,7 @@ from app.models import website_data
 from app.helpers import code_compiler, estimate_complexity
 import app.settings as settings
 from app.helpers import decorators
+from app.helpers import notifs
 
 app = FastAPI(debug=settings.debug_state)
 
@@ -55,9 +56,9 @@ def programming_languages(response: Response) -> Union[List, None]:
     if language_list:=code_compiler.get_active_languages():
         return language_list
     # noitify that the compiler is down
-
-    # -----SEND A DISCORD/SLACK NOTIFICATION-----
-
+    notifs.send_message_on_discord(
+        message="compiler didn't return the active languages list"
+    )
     response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return None
 
