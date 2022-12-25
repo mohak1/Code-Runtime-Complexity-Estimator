@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [refactor/fastapi]
+    branches: [main]
 
 jobs:
   Push-to-ECR-and-deploy-to-ECS:
