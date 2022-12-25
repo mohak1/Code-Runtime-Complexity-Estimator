@@ -1,0 +1,75 @@
+on:
+  push:
+    branches: [main]
+
+jobs:
+  Push-to-ECR-and-deploy-to-ECS:
+    name: Login to ECR, Build Image and Push to ECR
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY: public.ecr.aws
+      REPOSITORY_ALIAS: ${{secrets.ECR_REPOSITORY_ALIAS}}
+      REPOSITORY_NAME: ${{secrets.ECR_REPOSITORY_NAME}}
+      IMAGE_TAG: ${{github.sha}}
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: us-east-1
+
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registry-type: public
+    
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Build Docker Image
+      run: |
+        docker build -t $REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME:$IMAGE_TAG .
+
+    - name: Push Docker Image to ECR
+      run: |
+        docker push $REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME:$IMAGE_TAG
+
+    - name: install more-utils
+      run: sudo apt-get -y install moreutils
+
+    - name: Update python-server image ID in ecr_task_definition.json
+      run: |
+        jq --arg image_val "$REPOSITORY/$REPOSITORY_ALIAS/$REPOSITORY_NAME:$IMAGE_TAG" \
+          '.containerDefinitions[0].image=$image_val' \
+          ecr_task_definition.json | sponge ecr_task_definition.json
+
+    - name: Set discord webhook URL from git secrets in ecr_task_definition.json
+      env:
+        DISCORD_URL: ${{secrets.DISCORD_WEBHOOK_URL}}
+      run: |
+        jq --arg discord_url "$DISCORD_URL" \
+          '.containerDefinitions[0].environment[1].value=$discord_url' \
+          ecr_task_definition.json | sponge ecr_task_definition.json
+
+    - name: Change region for ECS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: eu-west-2
+
+    - name: Deploy updated ecr_task_definition.json
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ecr_task_definition.json
+        service: code-complexity-service
+        cluster: code-complexity-cluster
+        wait-for-service-stability: true
+
+    - name: Discord notification
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_URL}}
+      with:
+        args: 'Deployment completed'
