@@ -96,7 +96,7 @@ async def estimate_code_complexity(
         # send one of the compiler errors
         response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         return {'error': outputs}
-    
+
     # estimate time complexity and return the best fitting model
     return estimate_complexity.get_complexity_estimates(
         input_and_time_list=outputs,
